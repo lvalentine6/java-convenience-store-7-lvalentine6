@@ -31,7 +31,7 @@ class ResourceHandlerTest {
 		assertThat(result).containsExactlyElementsOf(expect);
 	}
 
-	@DisplayName("상품 파일이 없다면 IlligalArgumnetException 예외가 발생한다.")
+	@DisplayName("상품 파일이 없다면 IllegalArgumentException 예외가 발생한다.")
 	@Test
 	void readProductFromNotExist() {
 		//given
@@ -43,7 +43,7 @@ class ResourceHandlerTest {
 			.hasMessage(FileValidationMessage.INVALID_NOT_FOUND.getMessage());
 	}
 
-	@DisplayName("빈 상품 파일이라면 IlligalArgumnetException 예외가 발생한다.")
+	@DisplayName("빈 상품 파일이라면 IllegalArgumentException 예외가 발생한다.")
 	@Test
 	void readProductFromEmpty() {
 		//given
@@ -71,7 +71,7 @@ class ResourceHandlerTest {
 		assertThat(result).containsExactlyElementsOf(expect);
 	}
 
-	@DisplayName("프로모션 파일이 없다면 IlligalArgumnetException 예외가 발생한다.")
+	@DisplayName("프로모션 파일이 없다면 IllegalArgumentException 예외가 발생한다.")
 	@Test
 	void readPromotionFromNotExist() {
 		//given
@@ -83,7 +83,7 @@ class ResourceHandlerTest {
 			.hasMessage(FileValidationMessage.INVALID_NOT_FOUND.getMessage());
 	}
 
-	@DisplayName("빈 프로모션 파일이라면 IlligalArgumnetException 예외가 발생한다.")
+	@DisplayName("빈 프로모션 파일이라면 IllegalArgumentException 예외가 발생한다.")
 	@Test
 	void readPromotionFromEmpty() {
 		//given
