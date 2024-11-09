@@ -1,4 +1,4 @@
-package store.validator;
+package store.validator.product;
 
 public enum ProductValidateMessage {
 	INVALID_NAME("[ERROR] 상품 이름은 비어있을수 없습니다."),

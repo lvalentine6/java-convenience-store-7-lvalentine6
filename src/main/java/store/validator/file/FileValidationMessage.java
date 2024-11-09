@@ -1,4 +1,4 @@
-package store.validator;
+package store.validator.file;
 
 public enum FileValidationMessage {
 	INVALID_NOT_FOUND("[ERROR] 파일을 찾을수 없습니다."),

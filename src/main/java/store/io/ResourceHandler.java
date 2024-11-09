@@ -8,18 +8,18 @@ import java.util.List;
 
 import store.domain.product.PrimitiveProductInfo;
 import store.domain.promotion.PrimitivePromotionInfo;
-import store.validator.FileValidatingParser;
-import store.validator.FileValidationMessage;
-import store.validator.ProductValidatingParser;
-import store.validator.PromotionValidatingParser;
+import store.validator.file.FileValidatingParser;
+import store.validator.file.FileValidationMessage;
+import store.validator.file.ProductFileValidatingParser;
+import store.validator.file.PromotionFileValidatingParser;
 
 public class ResourceHandler {
 	private final FileValidatingParser<PrimitiveProductInfo> productValidatingParser;
 	private final FileValidatingParser<PrimitivePromotionInfo> promotionValidatingParser;
 
 	private ResourceHandler() {
-		this.productValidatingParser = ProductValidatingParser.getInstance();
-		this.promotionValidatingParser = PromotionValidatingParser.getInstance();
+		this.productValidatingParser = ProductFileValidatingParser.getInstance();
+		this.promotionValidatingParser = PromotionFileValidatingParser.getInstance();
 	}
 
 	private static class Holder {

@@ -1,4 +1,4 @@
-package store.validator;
+package store.validator.file;
 
 import java.util.List;
 

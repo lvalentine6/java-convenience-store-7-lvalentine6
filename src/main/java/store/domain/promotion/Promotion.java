@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
-import store.validator.PromotionValidateMessage;
+import store.validator.promotion.PromotionValidateMessage;
 
 public class Promotion {
 	private static final String DATE_FORMAT = "yyyy-MM-dd";

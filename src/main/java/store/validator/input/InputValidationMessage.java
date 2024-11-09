@@ -1,4 +1,4 @@
-package store.validator;
+package store.validator.input;
 
 public enum InputValidationMessage {
 }

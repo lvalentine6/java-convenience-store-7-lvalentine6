@@ -8,17 +8,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import store.domain.product.PrimitiveProductInfo;
+import store.validator.file.FileValidationMessage;
+import store.validator.file.ProductFileValidatingParser;
 
-class ProductValidatingParserTest {
+class ProductFileValidatingParserTest {
 	@DisplayName("상품의 첫번째 줄을 ','(콤마)로 나눈 길이와 열의 길이가 같지 않으면 IllegalArgumentException 예외가 발생한다.")
 	@Test
 	void validateFirstLine() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		String firstLine = "name,price,quantity";
 
 		//when & then
-		assertThatThrownBy(() -> productValidatingParser.validateFirstLine(firstLine))
+		assertThatThrownBy(() -> productFileValidatingParser.validateFirstLine(firstLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PRODUCT_COLUMN_SIZE.getMessage());
 
@@ -28,7 +30,7 @@ class ProductValidatingParserTest {
 	@Test
 	void processLine() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,price,quantity,promotion",
 			"콜라,1000,10,탄산2+1",
 			"콜라,1000,10,null",
@@ -43,7 +45,7 @@ class ProductValidatingParserTest {
 		);
 
 		//when
-		List<PrimitiveProductInfo> result = productValidatingParser.processLine(allLine);
+		List<PrimitiveProductInfo> result = productFileValidatingParser.processLine(allLine);
 
 		//then
 		assertThat(result).containsExactlyElementsOf(expect);
@@ -53,7 +55,7 @@ class ProductValidatingParserTest {
 	@Test
 	void processLineNotSize() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,price,quantity,promotion",
 			"콜라,1000,10",
 			"콜라,1000,10,null",
@@ -62,7 +64,7 @@ class ProductValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> productValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> productFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PRODUCT_COLUMN_SIZE.getMessage());
 	}
@@ -71,7 +73,7 @@ class ProductValidatingParserTest {
 	@Test
 	void processLinePriceNotNumber() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,price,quantity,promotion",
 			"콜라,1000,10,탄산2+1",
 			"콜라,abcd,10,null",
@@ -80,7 +82,7 @@ class ProductValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> productValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> productFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PRODUCT_PRICE_NUMBER.getMessage());
 	}
@@ -89,7 +91,7 @@ class ProductValidatingParserTest {
 	@Test
 	void processLinePriceOverFlow() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,price,quantity,promotion",
 			"콜라,1000,10,탄산2+1",
 			"콜라,10000000000,10,null",
@@ -98,7 +100,7 @@ class ProductValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> productValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> productFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PRODUCT_PRICE_OVER_FLOW.getMessage());
 	}
@@ -107,7 +109,7 @@ class ProductValidatingParserTest {
 	@Test
 	void processLinePriceUnderMinNumber() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,price,quantity,promotion",
 			"콜라,1000,10,탄산2+1",
 			"콜라,0,10,null",
@@ -116,7 +118,7 @@ class ProductValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> productValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> productFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PRODUCT_PRICE_MIN_NUMBER.getMessage());
 	}
@@ -125,7 +127,7 @@ class ProductValidatingParserTest {
 	@Test
 	void processLineQuantityNotNumber() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,price,quantity,promotion",
 			"콜라,1000,10,탄산2+1",
 			"콜라,1000,abcd,null",
@@ -134,7 +136,7 @@ class ProductValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> productValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> productFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PRODUCT_QUANTITY_NUMBER.getMessage());
 	}
@@ -143,7 +145,7 @@ class ProductValidatingParserTest {
 	@Test
 	void processLineQuantityOverFlow() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,price,quantity,promotion",
 			"콜라,1000,10,탄산2+1",
 			"콜라,1000,10,null",
@@ -152,7 +154,7 @@ class ProductValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> productValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> productFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PRODUCT_QUANTITY_OVER_FLOW.getMessage());
 	}
@@ -161,7 +163,7 @@ class ProductValidatingParserTest {
 	@Test
 	void processLineQuantityUnderMinNumber() {
 		//given
-		ProductValidatingParser productValidatingParser = ProductValidatingParser.getInstance();
+		ProductFileValidatingParser productFileValidatingParser = ProductFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,price,quantity,promotion",
 			"콜라,1000,10,탄산2+1",
 			"콜라,1000,10,null",
@@ -170,7 +172,7 @@ class ProductValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> productValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> productFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PRODUCT_QUANTITY_MIN_NUMBER.getMessage());
 	}

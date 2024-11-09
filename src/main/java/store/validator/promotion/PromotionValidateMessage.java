@@ -1,4 +1,4 @@
-package store.validator;
+package store.validator.promotion;
 
 public enum PromotionValidateMessage {
 	INVALID_NAME("[ERROR] 프로모션 이름은 비어있을수 없습니다."),

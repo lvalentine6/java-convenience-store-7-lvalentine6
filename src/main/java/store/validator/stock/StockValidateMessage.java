@@ -1,4 +1,4 @@
-package store.validator;
+package store.validator.stock;
 
 public enum StockValidateMessage {
 	INVALID_DUPLICATE_PROMOTIONS("[ERROR] 하나의 상품에는 하나의 프로모션만 가능합니다."),

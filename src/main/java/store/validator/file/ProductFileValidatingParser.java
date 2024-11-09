@@ -1,10 +1,10 @@
-package store.validator;
+package store.validator.file;
 
 import java.util.List;
 
 import store.domain.product.PrimitiveProductInfo;
 
-public class ProductValidatingParser implements FileValidatingParser<PrimitiveProductInfo> {
+public class ProductFileValidatingParser implements FileValidatingParser<PrimitiveProductInfo> {
 	private static final String DELIMITER = ",";
 	private static final int PRODUCT_COLUMN_SIZE = 4;
 	private static final int HEADER_LINES_TO_SKIP = 1;
@@ -18,15 +18,15 @@ public class ProductValidatingParser implements FileValidatingParser<PrimitivePr
 	private static final int MIN_VALID_QUANTITY_NUMBER = 0;
 	private static final int MAX_INTEGER_LENGTH = 10;
 
-	private ProductValidatingParser() {
+	private ProductFileValidatingParser() {
 	}
 
 	private static class Holder {
-		private static final ProductValidatingParser INSTANCE = new ProductValidatingParser();
+		private static final ProductFileValidatingParser INSTANCE = new ProductFileValidatingParser();
 
 	}
 
-	public static ProductValidatingParser getInstance() {
+	public static ProductFileValidatingParser getInstance() {
 		return Holder.INSTANCE;
 	}
 

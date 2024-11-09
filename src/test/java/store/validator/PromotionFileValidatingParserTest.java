@@ -8,17 +8,19 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import store.domain.promotion.PrimitivePromotionInfo;
+import store.validator.file.FileValidationMessage;
+import store.validator.file.PromotionFileValidatingParser;
 
-class PromotionValidatingParserTest {
+class PromotionFileValidatingParserTest {
 	@DisplayName("상품의 첫번째 줄을 ','(콤마)로 나눈 길이와 열의 길이가 같지 않으면 예외가 발생한다.")
 	@Test
 	void validateFirstLine() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		String firstLine = "name,buy,get,start_date";
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.validateFirstLine(firstLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.validateFirstLine(firstLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_COLUMN_SIZE.getMessage());
 	}
@@ -27,7 +29,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLine() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,1,1,2024-01-01,2024-12-31",
@@ -40,7 +42,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when
-		List<PrimitivePromotionInfo> result = promotionValidatingParser.processLine(allLine);
+		List<PrimitivePromotionInfo> result = promotionFileValidatingParser.processLine(allLine);
 
 		//then
 		assertThat(result).containsExactlyElementsOf(expect);
@@ -50,7 +52,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLineNotSize() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,1,2024-01-01,2024-12-31",
@@ -58,7 +60,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_COLUMN_SIZE.getMessage());
 	}
@@ -67,7 +69,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLineBuyNotNumber() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,abcd,1,2024-01-01,2024-12-31",
@@ -75,7 +77,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_BUY_NUMBER.getMessage());
 	}
@@ -84,7 +86,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLineBuyOverFlow() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,10000000000,1,2024-01-01,2024-12-31",
@@ -92,7 +94,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_BUY_OVER_FLOW.getMessage());
 	}
@@ -101,7 +103,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLineGetNotNumber() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,1,abcd,2024-01-01,2024-12-31",
@@ -109,7 +111,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_GET_NUMBER.getMessage());
 	}
@@ -118,7 +120,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLineGetOverFlow() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,1,10000000000,2024-01-01,2024-12-31",
@@ -126,7 +128,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_GET_OVER_FLOW.getMessage());
 	}
@@ -135,7 +137,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLineNotStartDateFormat() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,1,1,2024-010-01,2024-12-31",
@@ -143,7 +145,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_START_DATE.getMessage());
 	}
@@ -152,7 +154,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLineNotEndDateFormat() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,1,1,2024-01-01,2024-12-311",
@@ -160,7 +162,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_END_DATE.getMessage());
 	}
@@ -169,7 +171,7 @@ class PromotionValidatingParserTest {
 	@Test
 	void processLineStatDateIsRaterEndDate() {
 		//given
-		PromotionValidatingParser promotionValidatingParser = PromotionValidatingParser.getInstance();
+		PromotionFileValidatingParser promotionFileValidatingParser = PromotionFileValidatingParser.getInstance();
 		List<String> allLine = List.of("name,buy,get,start_date",
 			"탄산2+1,2,1,2024-01-01,2024-12-31",
 			"MD추천상품,1,1,2024-12-01,2024-01-01",
@@ -177,7 +179,7 @@ class PromotionValidatingParserTest {
 		);
 
 		//when & then
-		assertThatThrownBy(() -> promotionValidatingParser.processLine(allLine))
+		assertThatThrownBy(() -> promotionFileValidatingParser.processLine(allLine))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(FileValidationMessage.INVALID_PROMOTION_DATE_RANGE.getMessage());
 	}

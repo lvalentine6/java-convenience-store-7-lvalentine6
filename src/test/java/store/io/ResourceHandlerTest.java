@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import store.domain.product.PrimitiveProductInfo;
 import store.domain.promotion.PrimitivePromotionInfo;
-import store.validator.FileValidationMessage;
+import store.validator.file.FileValidationMessage;
 
 class ResourceHandlerTest {
 	@DisplayName("상품 파일을 읽어 원시 상품 정보를 반환한다.")

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import store.validator.StockValidateMessage;
+import store.validator.stock.StockValidateMessage;
 
 public class Stock {
 	private final List<Product> products;

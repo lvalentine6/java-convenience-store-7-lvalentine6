@@ -1,7 +1,7 @@
 package store.domain.product;
 
 import store.domain.promotion.Promotion;
-import store.validator.ProductValidateMessage;
+import store.validator.product.ProductValidateMessage;
 
 public class Product {
 	private final String name;

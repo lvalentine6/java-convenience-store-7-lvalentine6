@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import store.domain.promotion.PrimitivePromotionInfo;
 import store.domain.promotion.Promotion;
-import store.validator.StockValidateMessage;
+import store.validator.stock.StockValidateMessage;
 
 class StockTest {
 	@DisplayName("하나의 상품에 두개 이상의 프로모션이 있다면 IllegalArgumentException 예외가 발생한다.")

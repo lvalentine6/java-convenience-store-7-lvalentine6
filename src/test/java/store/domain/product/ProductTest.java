@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import store.domain.promotion.PrimitivePromotionInfo;
 import store.domain.promotion.Promotion;
-import store.validator.ProductValidateMessage;
+import store.validator.product.ProductValidateMessage;
 
 class ProductTest {
 	@DisplayName("원시 상품과 프로모션을 받아 상품을 생성한다.")

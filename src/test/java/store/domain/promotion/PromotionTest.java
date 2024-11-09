@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import store.validator.PromotionValidateMessage;
+import store.validator.promotion.PromotionValidateMessage;
 
 class PromotionTest {
 	@DisplayName("원시 프로모션을 받아 성공적으로 프로모션을 생성한다.")

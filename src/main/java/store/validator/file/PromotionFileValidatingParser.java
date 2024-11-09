@@ -1,4 +1,4 @@
-package store.validator;
+package store.validator.file;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -7,7 +7,7 @@ import java.util.List;
 
 import store.domain.promotion.PrimitivePromotionInfo;
 
-public class PromotionValidatingParser implements FileValidatingParser<PrimitivePromotionInfo> {
+public class PromotionFileValidatingParser implements FileValidatingParser<PrimitivePromotionInfo> {
 	private static final String DELIMITER = ",";
 	private static final int PROMOTION_COLUMN_SIZE = 5;
 	private static final int HEADER_LINES_TO_SKIP = 1;
@@ -24,14 +24,14 @@ public class PromotionValidatingParser implements FileValidatingParser<Primitive
 	private static final String DATE_FORMAT = "yyyy-MM-dd";
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
 
-	private PromotionValidatingParser() {
+	private PromotionFileValidatingParser() {
 	}
 
 	private static class Holder {
-		private static final PromotionValidatingParser INSTANCE = new PromotionValidatingParser();
+		private static final PromotionFileValidatingParser INSTANCE = new PromotionFileValidatingParser();
 	}
 
-	public static PromotionValidatingParser getInstance() {
+	public static PromotionFileValidatingParser getInstance() {
 		return Holder.INSTANCE;
 	}
 
