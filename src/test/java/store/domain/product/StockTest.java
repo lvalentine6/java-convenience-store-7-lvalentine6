@@ -12,6 +12,29 @@ import store.domain.promotion.Promotion;
 import store.validator.stock.StockValidateMessage;
 
 class StockTest {
+	@DisplayName("중복된 상품이 있다면 IllegalArgumentException 예외가 발생한다.")
+	@Test
+	void validateDuplicateProduct() {
+		//given
+		Promotion promotion1 = Promotion.from(
+			new PrimitivePromotionInfo("탄산1+1", 1, 1, "2024-01-01", "2024-12-31")
+		);
+
+		Promotion promotion2 = Promotion.from(
+			new PrimitivePromotionInfo("탄산2+1", 2, 1, "2024-01-01", "2024-12-31")
+		);
+
+		List<Product> products = List.of(
+			Product.of(new PrimitiveProductInfo("콜라", 1000, 10, ""), null),
+			Product.of(new PrimitiveProductInfo("콜라", 1000, 10, ""), null)
+		);
+
+		//when & then
+		assertThatThrownBy(() -> Stock.from(products))
+			.isInstanceOf(IllegalArgumentException.class)
+			.hasMessage(StockValidateMessage.INVALID_DUPLICATE_PRODUCT.getMessage());
+	}
+
 	@DisplayName("하나의 상품에 두개 이상의 프로모션이 있다면 IllegalArgumentException 예외가 발생한다.")
 	@Test
 	void validateDuplicatePromotion() {
