@@ -1,5 +1,10 @@
 package store.io;
 
+import java.util.List;
+
+import store.domain.product.PrimitiveProductInfo;
+import store.domain.promotion.PrimitivePromotionInfo;
+
 public class IoHandler {
 	private final InputHandler inputHandler;
 	private final OutputHandler outputHandler;
@@ -20,5 +25,13 @@ public class IoHandler {
 
 	public static IoHandler getInstance() {
 		return Holder.INSTANCE;
+	}
+
+	public List<PrimitiveProductInfo> getPrimitiveProductInfos(String filePathName) {
+		return resourceHandler.readProductFrom(filePathName);
+	}
+
+	public List<PrimitivePromotionInfo> getPrimitivePromotionInfos(String filePathName) {
+		return resourceHandler.readPromotionFrom(filePathName);
 	}
 }
