@@ -3,6 +3,7 @@ package store.io;
 import java.util.List;
 
 import store.domain.product.PrimitiveProductInfo;
+import store.domain.product.Product;
 import store.domain.promotion.PrimitivePromotionInfo;
 
 public class IoHandler {
@@ -33,5 +34,10 @@ public class IoHandler {
 
 	public List<PrimitivePromotionInfo> getPrimitivePromotionInfos(String filePathName) {
 		return resourceHandler.readPromotionFrom(filePathName);
+	}
+
+	public void showSellingProducts(List<Product> products) {
+		outputHandler.showWelcomeMessage();
+		products.forEach(outputHandler::showProduct);
 	}
 }

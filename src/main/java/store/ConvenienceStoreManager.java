@@ -32,6 +32,6 @@ public class ConvenienceStoreManager {
 	}
 
 	public void run() {
-
+		ioHandler.showSellingProducts(stock.getProducts());
 	}
 }
