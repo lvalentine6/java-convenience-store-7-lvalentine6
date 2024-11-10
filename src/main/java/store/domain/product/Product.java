@@ -54,6 +54,18 @@ public class Product {
 		return name;
 	}
 
+	public int getPrice() {
+		return price;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public Promotion getPromotion() {
+		return promotion;
+	}
+
 	public boolean hasPromotion() {
 		return promotion != null;
 	}
