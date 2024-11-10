@@ -1,10 +1,12 @@
 package store.domain.promotion;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
+import camp.nextstep.edu.missionutils.DateTimes;
 import store.validator.promotion.PromotionValidateMessage;
 
 public class Promotion {
@@ -102,5 +104,11 @@ public class Promotion {
 
 	public String getName() {
 		return name;
+	}
+
+	public boolean isValidPromotion() {
+		LocalDateTime now = DateTimes.now();
+		LocalDate today = now.toLocalDate();
+		return !today.isBefore(startDate) && !today.isAfter(endDate);
 	}
 }
