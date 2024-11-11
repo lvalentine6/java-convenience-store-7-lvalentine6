@@ -50,13 +50,6 @@ public class Order {
 		return membership.calculateDiscountPrice(normalAmount);
 	}
 
-	private int getNormalAmount() {
-		return orderLineItems.stream()
-			.filter(item -> !item.isPromotionApplied())
-			.mapToInt(item -> item.getNormalQuantity() * item.getUnitPrice())
-			.sum();
-	}
-
 	public int getFinalAmount() {
 		return getTotalAmount() - getPromotionDiscount() - getMembershipDiscount();
 	}
@@ -64,6 +57,13 @@ public class Order {
 	public int getTotalQuantity() {
 		return orderLineItems.stream()
 			.mapToInt(OrderLineItem::getTotalQuantity)
+			.sum();
+	}
+
+	private int getNormalAmount() {
+		return orderLineItems.stream()
+			.filter(item -> !item.isPromotionApplied())
+			.mapToInt(item -> item.getNormalQuantity() * item.getUnitPrice())
 			.sum();
 	}
 }
