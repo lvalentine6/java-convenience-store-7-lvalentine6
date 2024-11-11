@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import store.domain.order.OrderItem;
 import store.domain.promotion.PrimitivePromotionInfo;
 import store.domain.promotion.Promotion;
+import store.domain.stock.Stock;
 import store.validator.stock.StockValidateMessage;
 
 class StockTest {
