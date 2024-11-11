@@ -27,6 +27,12 @@ public class OrderLineItem {
 		this.isPromotionApplied = isPromotionApplied;
 	}
 
+	public static OrderLineItem of(String name, int totalQuantity, int unitPrice, int promotionQuantity,
+		int normalQuantity, int freeQuantity, boolean isPromotionApplied) {
+		return new OrderLineItem(name, totalQuantity, unitPrice, promotionQuantity, normalQuantity, freeQuantity,
+			isPromotionApplied);
+	}
+
 	public static OrderLineItem ofPromotionOnly(String name, PromotionOrderStatus status) {
 		return new OrderLineItem(
 			name,
@@ -52,12 +58,11 @@ public class OrderLineItem {
 	}
 
 	public static OrderLineItem ofAdditionalQuantity(OrderItem orderItem, PromotionOrderStatus status) {
-		int totalQuantity = orderItem.quantity() + status.additionalQuantity();
 		return new OrderLineItem(
 			orderItem.name(),
-			totalQuantity,
+			orderItem.quantity() + status.additionalQuantity(),
 			status.unitPrice(),
-			totalQuantity,
+			orderItem.quantity() + status.additionalQuantity(),
 			NO_NORMAL_QUANTITY,
 			status.additionalQuantity(),
 			PROMOTION_APPLIED
