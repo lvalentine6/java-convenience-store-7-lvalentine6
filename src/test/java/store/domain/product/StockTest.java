@@ -12,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import store.domain.order.OrderItem;
+import store.domain.order.OrderLineItem;
 import store.domain.promotion.PrimitivePromotionInfo;
 import store.domain.promotion.Promotion;
 import store.domain.stock.Stock;
@@ -79,54 +80,86 @@ class StockTest {
 			.isInstanceOf(IllegalStateException.class);
 	}
 
-	static Stream<Arguments> validStockProvider() {
-		return Stream.of(
-			Arguments.of(
-				"프로모션이 없고 일반 재고가 있는 주문",
-				createValidNormalOrderProducts(),
-				List.of(new OrderItem("콜라", 10))
+	@DisplayName("프로모션이 적용된 상품이고 프로모션이 유효한지 확인한다.")
+	@Test
+	void isPromotionAndValidPromotion() {
+		//given
+		List<Product> products = List.of(
+			Product.of(
+				"콜라", 1000, 10,
+				Promotion.from(new PrimitivePromotionInfo("탄산1+1", 1, 1, "2024-01-01", "2024-12-31"))
 			),
-			Arguments.of(
-				"프로모션이 있고 프로모션이 유효하며 프로모션 재고가 충분한 주문",
-				createValidPromotionProducts(),
-				List.of(new OrderItem("콜라", 10))
-			),
-			Arguments.of(
-				"프로모션이 있고 프로모션이 유효하지만 프로모션 재고가 부족하고 일반 재고가 있는 주문",
-				createValidPromotionOutOfPromotionStockButNormalStockProducts(),
-				List.of(new OrderItem("콜라", 10))
-			),
-			Arguments.of(
-				"프로모션이 있지만 유효하지 않고 일반 재고가 있는 주문",
-				createValidInvalidPromotionButNormalStockProducts(),
-				List.of(new OrderItem("콜라", 5))
+			Product.of(
+				"콜라", 1000, 5,
+				null
 			)
 		);
+		Stock stock = Stock.from(products);
+		OrderItem orderItem = new OrderItem("콜라", 3);
+
+		//when
+		boolean result = stock.isPromotionAndValidPromotion(orderItem);
+
+		//then
+		assertThat(result).isTrue();
 	}
 
-	static Stream<Arguments> invalidStockProvider() {
-		return Stream.of(
-			Arguments.of(
-				"없는 상품을 주문",
-				createValidPromotionOutOfPromotionOutOfNormalStockProducts(),
-				List.of(new OrderItem("커피", 3))
-			),
-			Arguments.of(
-				"프로모션이 있고 프로모션이 유효하지만 프로모션 재고가 부족하고 일반 재고도 부족한 주문",
-				createValidPromotionOutOfPromotionOutOfNormalStockProducts(),
-				List.of(new OrderItem("콜라", 3))
-			),
-			Arguments.of(
-				"프로모션이 있지만 유효하지 않고 일반 재고도 부족한 주문",
-				createValidInvalidPromotionOutOfNormalStockProducts(),
-				List.of(new OrderItem("콜라", 6))
-			),
-			Arguments.of(
-				"프로모션이 없고 일반 재고가 부족한 주문",
-				createValidOutOfNormalPromotionStockProducts(),
-				List.of(new OrderItem("콜라", 2))
-			)
+	@DisplayName("주문한 수량에 따른 프로모션 주문 상태를 반환한다.")
+	@MethodSource("promotionOrderStatusProvider")
+	@ParameterizedTest(name = "{0}")
+	void getPromotionOrderStatus(String description, List<Product> products, OrderItem orderItem,
+		PromotionOrderResult expectedResult) {
+		//given
+		Stock stock = Stock.from(products);
+
+		//when
+		PromotionOrderStatus status = stock.getPromotionOrderStatus(orderItem);
+
+		//then
+		assertThat(status.result()).isEqualTo(expectedResult);
+	}
+
+	@DisplayName("일반 상품 정보를 반환한다.")
+	@Test
+	void getNormalProductInfo() {
+		//given
+		List<Product> products = List.of(
+			Product.of("콜라", 1000, 10, null)
 		);
+		Stock stock = Stock.from(products);
+		OrderItem orderItem = new OrderItem("콜라", 5);
+
+		//when
+		OrderLineItem orderLineItem = stock.getNormalProductInfo(orderItem);
+
+		//then
+		assertThat(orderLineItem.getName()).isEqualTo("콜라");
+		assertThat(orderLineItem.getTotalQuantity()).isEqualTo(5);
+		assertThat(orderLineItem.getUnitPrice()).isEqualTo(1000);
+	}
+
+	@DisplayName("주문 후 재고를 차감한다.")
+	@Test
+	void deductStocks() {
+		//given
+		List<Product> products = List.of(
+			Product.of(
+				"콜라", 1000, 10,
+				Promotion.from(new PrimitivePromotionInfo("탄산2+1", 2, 1, "2024-01-01", "2024-12-31"))
+			),
+			Product.of("콜라", 1000, 5, null)
+		);
+		Stock stock = Stock.from(products);
+		List<OrderLineItem> orderLineItems = List.of(
+			OrderLineItem.of("콜라", 6, 1000, 6, 0, 2, true)
+		);
+
+		//when
+		stock.deductStocks(orderLineItems);
+
+		//then
+		Product promotionProduct = stock.getProducts().getFirst();
+		assertThat(promotionProduct.getQuantity()).isEqualTo(4);
 	}
 
 	// 프로모션이 없고 일반 재고가 있는 주문
@@ -228,6 +261,97 @@ class StockTest {
 			Product.of(
 				"사이다", 1000, 5,
 				null
+			)
+		);
+	}
+
+	static Stream<Arguments> promotionOrderStatusProvider() {
+		return Stream.of(
+			Arguments.of(
+				"재고가 부족한 경우",
+				List.of(
+					Product.of(
+						"콜라", 1000, 5,
+						Promotion.from(new PrimitivePromotionInfo("탄산1+1", 1, 1, "2024-01-01", "2024-12-31"))
+					),
+					Product.of("콜라", 1000, 5, null)
+				),
+				new OrderItem("콜라", 10),
+				PromotionOrderResult.INSUFFICIENT_STOCK
+			),
+			Arguments.of(
+				"프로모션 적용 가능한 수량보다 적은 경우",
+				List.of(
+					Product.of(
+						"콜라", 1000, 10,
+						Promotion.from(new PrimitivePromotionInfo("탄산2+1", 2, 1, "2024-01-01", "2024-12-31"))
+					),
+					Product.of("콜라", 1000, 5, null)
+				),
+				new OrderItem("콜라", 2),
+				PromotionOrderResult.BELOW_QUANTITY
+			),
+			Arguments.of(
+				"프로모션 적용 가능한 정확한 수량인 경우",
+				List.of(
+					Product.of(
+						"콜라", 1000, 10,
+						Promotion.from(new PrimitivePromotionInfo("탄산2+1", 2, 1, "2024-01-01", "2024-12-31"))
+					),
+					Product.of("콜라", 1000, 5, null)
+				),
+				new OrderItem("콜라", 9),
+				PromotionOrderResult.EXACT_QUANTITY
+			)
+		);
+	}
+
+	static Stream<Arguments> validStockProvider() {
+		return Stream.of(
+			Arguments.of(
+				"프로모션이 없고 일반 재고가 있는 주문",
+				createValidNormalOrderProducts(),
+				List.of(new OrderItem("콜라", 10))
+			),
+			Arguments.of(
+				"프로모션이 있고 프로모션이 유효하며 프로모션 재고가 충분한 주문",
+				createValidPromotionProducts(),
+				List.of(new OrderItem("콜라", 10))
+			),
+			Arguments.of(
+				"프로모션이 있고 프로모션이 유효하지만 프로모션 재고가 부족하고 일반 재고가 있는 주문",
+				createValidPromotionOutOfPromotionStockButNormalStockProducts(),
+				List.of(new OrderItem("콜라", 10))
+			),
+			Arguments.of(
+				"프로모션이 있지만 유효하지 않고 일반 재고가 있는 주문",
+				createValidInvalidPromotionButNormalStockProducts(),
+				List.of(new OrderItem("콜라", 5))
+			)
+		);
+	}
+
+	static Stream<Arguments> invalidStockProvider() {
+		return Stream.of(
+			Arguments.of(
+				"없는 상품을 주문",
+				createValidPromotionOutOfPromotionOutOfNormalStockProducts(),
+				List.of(new OrderItem("커피", 3))
+			),
+			Arguments.of(
+				"프로모션이 있고 프로모션이 유효하지만 프로모션 재고가 부족하고 일반 재고도 부족한 주문",
+				createValidPromotionOutOfPromotionOutOfNormalStockProducts(),
+				List.of(new OrderItem("콜라", 3))
+			),
+			Arguments.of(
+				"프로모션이 있지만 유효하지 않고 일반 재고도 부족한 주문",
+				createValidInvalidPromotionOutOfNormalStockProducts(),
+				List.of(new OrderItem("콜라", 6))
+			),
+			Arguments.of(
+				"프로모션이 없고 일반 재고가 부족한 주문",
+				createValidOutOfNormalPromotionStockProducts(),
+				List.of(new OrderItem("콜라", 2))
 			)
 		);
 	}
