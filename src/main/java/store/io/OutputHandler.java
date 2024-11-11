@@ -1,5 +1,7 @@
 package store.io;
 
+import java.util.List;
+
 import store.domain.order.Order;
 import store.domain.order.OrderLineItem;
 import store.domain.product.Product;
@@ -104,24 +106,39 @@ public class OutputHandler {
 	}
 
 	public void showReceipt(Order order) {
-		System.out.println(PROMPT_RECEIPT_TOTAL_HEADER);
+		printReceiptHeader();
+		printOrderItems(order.getOrderLineItems());
+		printPromotionItems(order.getPromotionItems());
+		printAmountSummary(order);
+	}
 
+	private void printReceiptHeader() {
+		System.out.println(PROMPT_RECEIPT_TOTAL_HEADER);
 		System.out.println(PROMPT_RECEIPT_ORDER_TOP);
-		for (OrderLineItem item : order.getOrderLineItems()) {
+	}
+
+	private void printOrderItems(List<OrderLineItem> orderItems) {
+		orderItems.forEach(item ->
 			System.out.printf(PROMPT_RECEIPT_ORDER_CONTENTS,
 				item.getName(),
 				item.getTotalQuantity(),
-				item.getTotalQuantity() * item.getUnitPrice());
-		}
+				item.getTotalQuantity() * item.getUnitPrice()));
+	}
 
+	private void printPromotionItems(List<OrderLineItem> promotionItems) {
 		System.out.println(PROMPT_RECEIPT_FREE_HEADER);
-		for (OrderLineItem item : order.getPromotionItems()) {
+		promotionItems.forEach(item ->
 			System.out.printf(PROMPT_RECEIPT_FREE_CONTENTS,
 				item.getName(),
-				item.getFreeQuantity());
-		}
+				item.getFreeQuantity()));
+	}
 
+	private void printAmountSummary(Order order) {
 		System.out.println(PROMPT_RECEIPT_AMOUNT_HEADER);
+		printAmountDetails(order);
+	}
+
+	private void printAmountDetails(Order order) {
 		System.out.printf(PROMPT_RECEIPT_AMOUNT_ORIGIN_TOTAL_AMOUNT,
 			order.getTotalQuantity(),
 			order.getTotalAmount());
