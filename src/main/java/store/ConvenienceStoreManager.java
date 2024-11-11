@@ -9,8 +9,8 @@ import store.domain.order.OrderLineItem;
 import store.domain.product.Product;
 import store.domain.product.PromotionOrderResult;
 import store.domain.product.PromotionOrderStatus;
-import store.domain.stock.Stock;
 import store.domain.promotion.Promotions;
+import store.domain.stock.Stock;
 import store.io.IoHandler;
 
 public class ConvenienceStoreManager {
@@ -107,13 +107,7 @@ public class ConvenienceStoreManager {
 	}
 
 	private String getInsufficientStockAnswer(String name, int quantity) {
-		while (true) {
-			try {
-				return ioHandler.getNonDisCount(name, quantity);
-			} catch (IllegalArgumentException invalidInput) {
-				ioHandler.showExceptionMessage(invalidInput.getMessage());
-			}
-		}
+		return ioHandler.getNonDisCount(name, quantity);
 	}
 
 	private OrderLineItem handleBelowQuantity(OrderItem orderItem, PromotionOrderStatus status) {
@@ -126,13 +120,7 @@ public class ConvenienceStoreManager {
 	}
 
 	private String getBlowStockAnswer(String name, int quantity) {
-		while (true) {
-			try {
-				return ioHandler.getApplyPromotion(name, quantity);
-			} catch (IllegalArgumentException invalidInput) {
-				ioHandler.showExceptionMessage(invalidInput.getMessage());
-			}
-		}
+		return ioHandler.getApplyPromotion(name, quantity);
 	}
 
 	private OrderLineItem handleExactQuantity(OrderItem orderItem, PromotionOrderStatus status) {
@@ -140,22 +128,10 @@ public class ConvenienceStoreManager {
 	}
 
 	private String getApplyMembershipAnswer() {
-		while (true) {
-			try {
-				return ioHandler.getApplyMembership();
-			} catch (IllegalArgumentException invalidInput) {
-				ioHandler.showExceptionMessage(invalidInput.getMessage());
-			}
-		}
+		return ioHandler.getApplyMembership();
 	}
 
 	private String getContinueAnswer() {
-		while (true) {
-			try {
-				return ioHandler.getContinue();
-			} catch (IllegalArgumentException invalidInput) {
-				ioHandler.showExceptionMessage(invalidInput.getMessage());
-			}
-		}
+		return ioHandler.getContinue();
 	}
 }
