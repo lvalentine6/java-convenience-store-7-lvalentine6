@@ -6,7 +6,7 @@ import store.validator.product.ProductValidateMessage;
 public class Product {
 	private final String name;
 	private final int price;
-	private final int quantity;
+	private int quantity;
 	private final Promotion promotion;
 
 	private Product(String name, int price, int quantity, Promotion promotion) {
@@ -68,5 +68,9 @@ public class Product {
 
 	public boolean hasPromotion() {
 		return promotion != null;
+	}
+
+	public void deductQuantity(int deductQuantity) {
+		quantity -= deductQuantity;
 	}
 }
