@@ -51,13 +51,17 @@ public class Stock {
 	private List<Product> addOutOfStockVersions(List<Product> products) {
 		Set<String> hasNormalVersions = findProductsWithNormalVersion(products);
 		List<Product> result = new ArrayList<>();
-		products.forEach(p -> {
-			result.add(p);
-			if (p.hasPromotion() && !hasNormalVersions.contains(p.getName())) {
-				result.add(createOutOfStockVersion(p));
-			}
+		products.forEach(product -> {
+			result.add(product);
+			addOutOfStockVersionIfNeeded(result, product, hasNormalVersions);
 		});
 		return result;
+	}
+
+	private void addOutOfStockVersionIfNeeded(List<Product> result, Product product, Set<String> hasNormalVersions) {
+		if (product.hasPromotion() && !hasNormalVersions.contains(product.getName())) {
+			result.add(createOutOfStockVersion(product));
+		}
 	}
 
 	private Set<String> findProductsWithNormalVersion(List<Product> products) {
@@ -86,9 +90,7 @@ public class Stock {
 		List<String> orderNames = orderItems.stream()
 			.map(OrderItem::name)
 			.toList();
-
 		validateNames(orderNames);
-
 		for (OrderItem orderItem : orderItems) {
 			validateOrderItem(orderItem);
 		}
@@ -116,16 +118,20 @@ public class Stock {
 	}
 
 	private void deductStockForOrder(OrderLineItem orderLineItem) {
-		String productName = orderLineItem.getName();
-		Product promotionProduct = findPromotionProductByName(productName);
+		deductPromotionStock(orderLineItem);
+		deductNormalStock(orderLineItem);
+	}
 
+	private void deductPromotionStock(OrderLineItem orderLineItem) {
+		Product promotionProduct = findPromotionProductByName(orderLineItem.getName());
 		if (promotionProduct != null && orderLineItem.isPromotionApplied()) {
-			int promotionQuantity = orderLineItem.getPromotionQuantity();
-			promotionProduct.deductQuantity(promotionQuantity);
+			promotionProduct.deductQuantity(orderLineItem.getPromotionQuantity());
 		}
+	}
 
+	private void deductNormalStock(OrderLineItem orderLineItem) {
 		if (orderLineItem.getNormalQuantity() > 0) {
-			Product normalProduct = findNormalProductByName(productName);
+			Product normalProduct = findNormalProductByName(orderLineItem.getName());
 			normalProduct.deductQuantity(orderLineItem.getNormalQuantity());
 		}
 	}
@@ -151,12 +157,20 @@ public class Stock {
 	private PromotionOrderStatus calculateFreeQuantity(Product findProduct, OrderItem orderItem) {
 		Promotion promotion = findProduct.getPromotion();
 		if (orderItem.quantity() < findProduct.getQuantity() && orderItem.quantity() % promotion.getBuy() == 0) {
-			return new PromotionOrderStatus(PromotionOrderResult.BELOW_QUANTITY, -1,
-				orderItem.quantity(), -1,
-				(orderItem.quantity() / promotion.getBuy()) * promotion.getGet(), findProduct.getPrice());
+			return new PromotionOrderStatus(
+				PromotionOrderResult.BELOW_QUANTITY,
+				-1,
+				orderItem.quantity(),
+				-1,
+				(orderItem.quantity() / promotion.getBuy()) * promotion.getGet(),
+				findProduct.getPrice());
 		}
-		return new PromotionOrderStatus(PromotionOrderResult.EXACT_QUANTITY, -1, orderItem.quantity(),
-			-1, (orderItem.quantity() / promotion.getBuy()) * promotion.getGet(), findProduct.getPrice());
+		return new PromotionOrderStatus(PromotionOrderResult.EXACT_QUANTITY,
+			-1,
+			orderItem.quantity(),
+			-1,
+			(orderItem.quantity() / promotion.getBuy()) * promotion.getGet(),
+			findProduct.getPrice());
 	}
 
 	public OrderLineItem getNormalProductInfo(OrderItem orderItem) {
@@ -181,12 +195,10 @@ public class Stock {
 	private void validateOrderItem(OrderItem orderItem) {
 		Product promotionProduct = findPromotionProductByName(orderItem.name());
 		Product normalProduct = findNormalProductByName(orderItem.name());
-
 		if (promotionProduct != null) {
 			validatePromotionOrder(promotionProduct, normalProduct, orderItem.quantity());
 			return;
 		}
-
 		validateNormalOrderStock(normalProduct, orderItem.quantity());
 	}
 
