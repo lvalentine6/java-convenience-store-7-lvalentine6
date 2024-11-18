@@ -1,7 +1,11 @@
 package store;
 
+import store.io.IoHandler;
+
 public class Application {
-    public static void main(String[] args) {
-        // TODO: 프로그램 구현
-    }
+	public static void main(String[] args) {
+		IoHandler ioHandler = IoHandler.getInstance();
+		ConvenienceStoreManager convenienceStoreManager = ConvenienceStoreManager.from(ioHandler);
+		convenienceStoreManager.run();
+	}
 }
